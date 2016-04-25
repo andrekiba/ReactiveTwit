@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReactiveTwit.Pages.TweetSearchPage"
+             xmlns:vm="clr-namespace:ReactiveTwit.PageModels;assembly=ReactiveTwit"
+             xmlns:sel="clr-namespace:ReactiveTwit.Selectors;assembly=ReactiveTwit"
+             Title="Tweets">
+  
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <vm:TweetSearchPageModel x:Key="TweetSearchPageModel"/>
+      <sel:TweetTemplateSelector x:Key="TweetTemplateSelector"/>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+  
+  <AbsoluteLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="Gray">
+    <Grid AbsoluteLayout.LayoutFlags="All"
+          AbsoluteLayout.LayoutBounds="0,0,1,1"
+          RowSpacing="0"
+          BindingContext="{StaticResource TweetSearchPageModel}">
+      
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <!--<RowDefinition Height="Auto"/>-->
+      </Grid.RowDefinitions>
+
+      <StackLayout Grid.Row="0" Orientation="Vertical" VerticalOptions="CenterAndExpand">
+        <!--<Button Text="Add" Command="{Binding AddCommand}" />-->
+        <SearchBar Placeholder="search for..." Text="{Binding Path=SearchText}" BackgroundColor="Gray" CancelButtonColor="White"/>
+      </StackLayout>
+
+	    <ListView Grid.Row="1" x:Name="TweetsView" ItemsSource="{Binding Tweets}"
+              ItemTemplate="{StaticResource TweetTemplateSelector}"
+              SeparatorVisibility="None"
+	  			    IsPullToRefreshEnabled="true"
+              HasUnevenRows="True"
+              IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+              RefreshCommand="{Binding RefreshCommand}"
+              ItemSelected="TweetsView_OnItemSelected"
+              ItemTapped="TweetsView_OnItemTapped"
+              BackgroundColor="Gray"
+              >
+		    <!--<ListView.ItemTemplate>
+          <DataTemplate x:Key="TweetTemplate">
+            <ImageCell Text="{Binding Text}" TextColor="Gray" Detail="{Binding User}" DetailColor="Black" ImageSource="{Binding ProfileImageUrl}"/>
+          </DataTemplate>
+        </ListView.ItemTemplate>-->
+      </ListView>
+
+	  <!--<ListView Grid.Row="1" x:Name="SearchStringsView" ItemsSource="{Binding SearchStrings}"
+                IsPullToRefreshEnabled="true"
+                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                RefreshCommand="{Binding RefreshCommand}">
+        <ListView.ItemTemplate>
+          <DataTemplate x:Key="TweetTemplate">
+            <TextCell Text="{Binding}" TextColor="Gray"/>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>-->
+
+    </Grid>
+  </AbsoluteLayout>
+
+</ContentPage>
