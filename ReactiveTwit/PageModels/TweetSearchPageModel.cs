@@ -36,8 +36,8 @@ namespace ReactiveTwit.PageModels
                 .Do(x => Debug.WriteLine(x));
                 
 			var switched = searchTexts
-				.SelectMany(x => Observable.FromAsync(() => twitterApi.AllTweetsAbout1(x)))
-                //.Select(twitterApi.AllTweetsAbout)               
+				//.SelectMany(x => Observable.FromAsync(() => twitterApi.AllTweetsAbout1(x)))
+                .Select(x => twitterApi.AllTweetsAbout(x))               
                 .Do(x => Debug.WriteLine("Switching"))             
 				.Switch()
                 .Do(x => Debug.WriteLine(x.Text));
