@@ -1,17 +1,23 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using LinqToTwitter;
-using Plugin.Settings;
 using ReactiveTwit.Models;
 
 namespace ReactiveTwit.Services
 {
     public class TwitterApi
     {
+        #region Fields
+
+        private readonly TwitterContext twitterContext;
+
+        #endregion
+
+        #region Auth
+
         private readonly SingleUserAuthorizer auth = new SingleUserAuthorizer
         {
 			CredentialStore = new InMemoryCredentialStore
@@ -23,7 +29,7 @@ namespace ReactiveTwit.Services
             }
         };
 
-        private readonly TwitterContext twitterContext;
+        #endregion
 
         public TwitterApi()
         {
@@ -35,6 +41,8 @@ namespace ReactiveTwit.Services
 
             twitterContext = new TwitterContext(auth);
         }
+
+        #region Methods
 
         private IObservable<StreamContent> TwitterStream(string track)
         {
@@ -58,7 +66,7 @@ namespace ReactiveTwit.Services
 
                 return Disposable.Create(() => { disposed = true; });
             });
-        }
+        }      
 
         public IObservable<Tweet> AllTweetsAbout(string topic)
         {
@@ -83,5 +91,35 @@ namespace ReactiveTwit.Services
         {
             return status.Text.ToLower().Contains(topic.ToLower());
         }
+
+        private async Task<IObservable<StreamContent>> TwitterStream1(string track)
+        {
+            var streaming = twitterContext.Streaming.Where(s => s.Type == StreamingType.Filter && s.Track == track);
+
+            return await streaming.ToObservableAsync();
+        }
+
+        public async Task<IObservable<Tweet>> AllTweetsAbout1(string topic)
+        {
+            var streaming = await TwitterStream1(topic);
+
+            return streaming
+                //.Do(x => Debug.WriteLine("step1"))
+                .Where(x => x.EntityType == StreamEntityType.Status)
+                //.Do(x => Debug.WriteLine("step2"))
+                .Where(x => Predicate(x.Entity as Status, topic))
+                //.Do(x => Debug.WriteLine("step3"))
+                .Select(status =>
+                {
+                    Tweet tweet;
+                    Tweet.TryParse(status.Content, topic, out tweet);
+                    return tweet;
+                })
+                //.Do(x => Debug.WriteLine( x != null ? "si" : "no" ))
+                //.Do(x => Debug.WriteLine(x.Text))
+                .Where(t => t != null);
+        }
+
+        #endregion
     }
 }

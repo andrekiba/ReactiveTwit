@@ -2,12 +2,13 @@
 using System.Diagnostics;
 using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ReactiveTwit.Models
 {
     public class Tweet
     {
+        #region Properties
+
         public string User { get; private set; }
         public string Text { get; private set; }
         public string Topic { get; private set; }
@@ -18,22 +19,7 @@ namespace ReactiveTwit.Models
         public DateTime TimeStamp { get; private set; }
         public int Score => UserFavouritesCount + UserFollowersCount;
 
-        //private Tweet()
-        //{
-
-        //}
-
-        //public Tweet(string user, string text, string topic, string url, string profileImageUrl, int userFavouritesCount, int userFollowersCount, DateTime timeStamp)
-        //{
-        //    User = user;
-        //    Text = text;
-        //    Topic = topic;
-        //    Url = url;
-        //    ProfileImageUrl = profileImageUrl;
-        //    UserFavouritesCount = userFavouritesCount;
-        //    UserFollowersCount = userFollowersCount;
-        //    TimeStamp = timeStamp;
-        //}
+        #endregion
 
         public static bool TryParse(string json, string topic, out Tweet tweet)
         {
